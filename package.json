@@ -1,20 +1,20 @@
 {
-  "name": "objy-mapper-mongodb",
-  "version": "0.0.1",
-  "description": "A storage mapper for mongodb",
+  "name": "objy-mapper-gridfs",
+  "version": "0.0.2",
+  "description": "A storage mapper for gridfs",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/objy-org/objy-mapper-mongodb.git"
+    "url": "git+https://github.com/objy-org/objy-mapper-gridfs.git"
   },
   "keywords": [
   ],
   "author": "Marco Boelling",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/objy-org/objy-mapper-mongodb/issues"
+    "url": "https://github.com/objy-org/objy-mapper-gridfs/issues"
   },
-  "homepage": "https://github.com/objy-org/objy-mapper-mongodb#readme",
+  "homepage": "https://github.com/objy-org/objy-mapper-gridfs#readme",
   "dependencies": {
     "mongoose": "6.0.11",
     "shortid": "^2.2.15"

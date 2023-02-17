@@ -173,6 +173,8 @@ Mapper = function(OBJY, options) {
                         return;
                     }
 
+                    if(!data) return error({error: 'file not found'});
+
                     if (!data.properties) data.properties = {};
 
                     data.properties.data = _data;

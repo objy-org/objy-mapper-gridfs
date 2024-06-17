@@ -302,7 +302,7 @@ Mapper = function(OBJY, options) {
                     
 
                     if (err) {
-                        console.log(err);
+                        console.log(err); 
                         error('Error adding file');
                         return;
                     }

@@ -298,11 +298,8 @@ Mapper = function(OBJY, options) {
 
                 var fileData = spooElement.properties.data;
 
-                console.log('adding data...', spooElement, fileData); 
-
                 Attachment.write({ _id: fileId, filename: spooElement.name }, fileData, (err, file) => {
                     
-                    console.log('write args', err, file)
 
                     if (err) {
                         console.log(err);
@@ -310,8 +307,6 @@ Mapper = function(OBJY, options) {
                         return;
                     }
 
-                    console.log('data', fileData);
-                    console.log('file', file);
 
                     var _spooElement = Object.assign({}, spooElement)
 
@@ -374,7 +369,6 @@ Mapper = function(OBJY, options) {
                     }
                     if (data.n == 0) error("object not found");
                     else {
-                        console.log("remove success");
                         success({ _id: spooElement._id });
                     }
 

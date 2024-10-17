@@ -155,8 +155,15 @@ Mapper = function(OBJY, options) {
                 modelName: 'File',
                 connection: db
             });
+            var constrains = null;
 
-            var constrains = { _id: mongoose.Types.ObjectId(id) };
+            try {
+                constrains = { _id: mongoose.Types.ObjectId(id) }; 
+            } catch(e){
+                OBJY.Logger.error(e);
+                error('Error getting file invalid id')
+                return
+            }
 
             if (app) constrains['applications'] = { $in: [app] }
 

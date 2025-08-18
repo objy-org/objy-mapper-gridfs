@@ -31,10 +31,13 @@ const ObjSchema = new Schema(generalObjectModel, { strict: false });
 Mapper = function (OBJY, options) {
     return Object.assign(new OBJY.StorageTemplate(OBJY, options), {
         database: {},
+        databases: {},
+        currentConnectionString: null,
         index: {},
         globalPaging: 20,
 
         connect: function (connectionString, success, error, options) {
+            this.currentConnectionString = connectionString;
             this.database = mongoose.createConnection(connectionString, options);
 
             this.database.on('error', function (err) {
@@ -43,17 +46,35 @@ Mapper = function (OBJY, options) {
 
             this.database.once('open', function () {
                 success();
+                this.currentConnectionString = connectionString;
             });
 
             return this;
         },
 
+        getDBConnection: async function (dbName) {
+            if (!this.databases[dbName]) {
+                if (dbName.match(/[\/\\."$\*<>:\|\?]/)) {
+                    return null;
+                }
+
+                this.databases[dbName] = await mongoose.createConnection(this.currentConnectionString, { dbName: dbName });
+                return this.databases[dbName];
+            }
+
+            if (this.databases[dbName]) {
+                return this.databases[dbName];
+            }
+        },
+
         getConnection: function () {
-            return this.database;
+            return { database: this.database, databases: this.databases, currentConnectionString: this.currentConnectionString };
         },
 
         useConnection: function (connection, success, error) {
-            this.database = connection;
+            this.database = connection.database;
+            this.databases = connection.databases;
+            this.currentConnectionString = connection.currentConnectionString;
 
             this.database.on('error', function (err) {
                 error(err);
@@ -66,16 +87,18 @@ Mapper = function (OBJY, options) {
             return this;
         },
 
-        getDBByMultitenancy: function (client) {
+        getDBByMultitenancy: async function (client) {
+            if (this.staticDatabase) return await this.getDBConnection(client);
+
             if (this.multitenancy == this.CONSTANTS.MULTITENANCY.SHARED) {
-                return this.database.useDb('spoo');
+                return await this.getDBConnection('spoo');
             } else if (this.multitenancy == this.CONSTANTS.MULTITENANCY.ISOLATED) {
-                return this.database.useDb(client);
+                return await this.getDBConnection(client);
             }
         },
 
-        createClient: function (client, success, error) {
-            var db = this.getDBByMultitenancy(client);
+        createClient: async function (client, success, error) {
+            var db = await this.getDBByMultitenancy(client);
 
             var ClientInfo = db.model('clientinfos', ClientSchema);
 
@@ -99,7 +122,7 @@ Mapper = function (OBJY, options) {
             });
         },
 
-        listClients: function (success, error) {
+        listClients: async function (success, error) {
             if (this.multitenancy == this.CONSTANTS.MULTITENANCY.ISOLATED) {
                 new Admin(this.database.db).listDatabases(function (err, result) {
                     if (err) error(err);
@@ -110,7 +133,7 @@ Mapper = function (OBJY, options) {
                     );
                 });
             } else {
-                var db = this.getDBByMultitenancy('spoo');
+                var db = await this.getDBByMultitenancy('spoo');
 
                 var ClientInfo = db.model('clientinfos', ClientSchema);
 
@@ -130,7 +153,7 @@ Mapper = function (OBJY, options) {
         },
 
         getById: async function (id, success, error, app, client) {
-            const db = this.getDBByMultitenancy(client);
+            const db = await this.getDBByMultitenancy(client);
             const bucket = new mongoose.mongo.GridFSBucket(db);
 
             let data = null;
@@ -185,8 +208,8 @@ Mapper = function (OBJY, options) {
             }
         },
 
-        getByCriteria: function (criteria, success, error, app, client, flags) {
-            const db = this.getDBByMultitenancy(client);
+        getByCriteria: async function (criteria, success, error, app, client, flags) {
+            const db = await this.getDBByMultitenancy(client);
 
             var Obj = db.model(this.objectFamily, ObjSchema);
 
@@ -241,8 +264,8 @@ Mapper = function (OBJY, options) {
             });
         },
 
-        count: function (criteria, success, error, app, client, flags) {
-            var db = this.getDBByMultitenancy(client);
+        count: async function (criteria, success, error, app, client, flags) {
+            var db = await this.getDBByMultitenancy(client);
 
             var Obj = db.model(this.objectFamily, ObjSchema);
 
@@ -271,7 +294,7 @@ Mapper = function (OBJY, options) {
         },
 
         add: async function (spooElement, success, error, app, client) {
-            const db = this.getDBByMultitenancy(client);
+            const db = await this.getDBByMultitenancy(client);
             const bucket = new mongoose.mongo.GridFSBucket(db);
 
             let data = null;
@@ -368,7 +391,7 @@ Mapper = function (OBJY, options) {
             }
         },
         remove: async function (spooElement, success, error, app, client) {
-            const db = this.getDBByMultitenancy(client);
+            const db = await this.getDBByMultitenancy(client);
             const bucket = new mongoose.mongo.GridFSBucket(db);
 
             let data = null;

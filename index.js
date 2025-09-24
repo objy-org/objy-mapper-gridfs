@@ -210,6 +210,7 @@ Mapper = function (OBJY, options) {
 
         getByCriteria: async function (criteria, success, error, app, client, flags) {
             const db = await this.getDBByMultitenancy(client);
+            let data = null;
 
             var Obj = db.model(this.objectFamily, ObjSchema);
 
@@ -253,19 +254,20 @@ Mapper = function (OBJY, options) {
                 finalQuery = Obj.aggregate(criteria.$aggregate);
             }
 
-            finalQuery.lean().exec(function (err, data) {
-                if (err) {
-                    error(err);
-                    return;
-                }
-
-                success(data);
+            try {
+                data = await finalQuery.lean().exec();
+            } catch (err) {
+                error(err);
                 return;
-            });
+            }
+
+            success(data);
+            return;
         },
 
         count: async function (criteria, success, error, app, client, flags) {
             var db = await this.getDBByMultitenancy(client);
+            let data = null;
 
             var Obj = db.model(this.objectFamily, ObjSchema);
 
@@ -278,15 +280,15 @@ Mapper = function (OBJY, options) {
 
             if (this.multitenancy == this.CONSTANTS.MULTITENANCY.SHARED && client) criteria['tenantId'] = client;
 
-            Obj.count(criteria).exec(function (err, data) {
-                if (err) {
-                    error(err);
-                    return;
-                }
-
-                success({ result: data });
+            try {
+                data = await Obj.count(criteria).exec();
+            } catch (err) {
+                error(err);
                 return;
-            });
+            }
+
+            success({ result: data });
+            return;
         },
 
         update: function (spooElement, success, error, app, client) {
@@ -314,8 +316,6 @@ Mapper = function (OBJY, options) {
 
                 try {
                     await new Promise((resolve, reject) => {
-                        console.log(db);
-
                         fileData
                             .pipe(uploadStream)
                             .on('error', (err) => {
@@ -350,8 +350,6 @@ Mapper = function (OBJY, options) {
                     error(err);
                     return;
                 }
-
-                console.log(data);
 
                 success(data);
 

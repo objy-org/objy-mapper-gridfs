@@ -1,6 +1,6 @@
 {
     "name": "objy-mapper-gridfs",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "A storage mapper for gridfs",
     "main": "index.js",
     "repository": {
@@ -15,14 +15,7 @@
     },
     "homepage": "https://github.com/objy-org/objy-mapper-gridfs#readme",
     "dependencies": {
-        "mongoose": "6.0.11",
-        "mongoose-gridfs": "1.2.48",
-        "gridfs-stream": "^1.1.1",
-        "shortid": "^2.2.15",
-        "shortid": "^2.2.15"
+        "mongoose": "^8.17.1"
     },
-    "devDependencies": {
-        "jest": "^25.1.0",
-        "tinyify": "^2.5.2"
-    }
+    "devDependencies": {}
 }

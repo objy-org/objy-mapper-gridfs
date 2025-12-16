@@ -26,6 +26,7 @@ const generalObjectModel = {
     authorisations: {},
 };
 
+
 const ObjSchema = new Schema(generalObjectModel, { strict: false });
 
 Mapper = function (OBJY, options) {

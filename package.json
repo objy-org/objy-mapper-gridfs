@@ -17,5 +17,5 @@
     "dependencies": {
         "mongoose": "^8.17.1"
     },
-    "devDependencies": {},
+    "devDependencies": {}
 }

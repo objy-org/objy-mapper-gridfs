@@ -129,7 +129,7 @@ Mapper = function (OBJY, options) {
                     success(
                         result.databases.map(function (item) {
                             return item.name;
-                        })
+                        }),
                     );
                 });
             } else {
@@ -146,7 +146,7 @@ Mapper = function (OBJY, options) {
                     success(
                         data.map(function (item) {
                             return item.name;
-                        })
+                        }),
                     );
                 });
             }
@@ -410,16 +410,18 @@ Mapper = function (OBJY, options) {
                 return;
             }
 
-            Obj.deleteOne(criteria, function (err, data) {
-                if (err) {
-                    error(err);
-                    return;
-                }
-                if (data.n == 0) error('object not found');
-                else {
-                    success({ _id: spooElement._id });
-                }
-            });
+            try {
+                data = await Obj.deleteOne(criteria);
+            } catch (err) {
+                console.log(err);
+
+                return error('Error removing file 2', err);
+            }
+
+            if (data.n == 0) error('object not found');
+            else {
+                success({ _id: spooElement._id });
+            }
         },
     });
 };

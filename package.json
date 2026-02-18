@@ -1,6 +1,6 @@
 {
-    "name": "objy-mapper-grid-fs",
-    "version": "0.0.9",
+    "name": "objy-mapper-gridfs",
+    "version": "0.0.12",
     "description": "A storage mapper for gridfs",
     "main": "index.js",
     "repository": {
@@ -15,11 +15,10 @@
     },
     "homepage": "https://github.com/objy-org/objy-mapper-gridfs#readme",
     "dependencies": {
-        "mongoose": "^8.17.1"
+        "mongoose": "6.12.5"
     },
-    "devDependencies": {},
-     "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
-
+    "devDependencies": {
+        "jest": "^25.1.0",
+        "tinyify": "^2.5.2"
+    }
 }

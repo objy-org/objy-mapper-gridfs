@@ -1,6 +1,6 @@
 {
     "name": "objy-mapper-gridfs",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "A storage mapper for gridfs",
     "main": "index.js",
     "repository": {
